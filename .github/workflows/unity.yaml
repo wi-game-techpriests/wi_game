@@ -57,8 +57,8 @@ jobs:
         with:
           targetPlatform: WebGL
           unityVersion: 6000.3.13f1
-          buildProfile: 'Assets/Settings/Build Profiles/Web - Mobile - Development.asset'
-          projectPath: 'wi_game'
+          buildProfile: 'Assets/Settings/Build Profiles/Web_Dev - Mobile - Development.asset'
+          projectPath: wi_game
 
       # Output
       - uses: actions/upload-artifact@v4
