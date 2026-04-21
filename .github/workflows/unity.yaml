@@ -57,7 +57,7 @@ jobs:
         with:
           targetPlatform: WebGL
           unityVersion: 6000.3.13f1
-          buildProfile: 'Assets/Settings/Build Profiles/Web - Mobile - Development.asset'
+          buildProfile: 'Assets/Settings/Build Profiles/Web_Dev - Mobile - Development.asset'
           projectPath: wi_game
 
       # Output
