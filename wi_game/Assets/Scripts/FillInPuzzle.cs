@@ -9,17 +9,21 @@ public class FillInPuzzle : MonoBehaviour
     [TextArea(15,20)]
     public string text;
 
+    public string[] options;
+
     public FillInText textArea;
+    public FillInOptions optionArea;
 
 
     void Start()
     {
-        FillText();
+        Setup();
     }
 
 
-    public void FillText()
+    public void Setup()
     {
         textArea.CreateText(text,textHeight,slotWidth,padding);
+        optionArea.CreateOptions(options,4);
     }
 }

@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 688168683575005095}
   - component: {fileID: 1372532814231542266}
   - component: {fileID: 9068873680472178939}
-  - component: {fileID: 5704678246240772085}
   m_Layer: 5
-  m_Name: Line
+  m_Name: TextLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,18 +77,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 2
   m_VerticalFit: 2
---- !u!114 &5704678246240772085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 788831153454192558}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 157d8fc523ff17a1fb73d971d57113ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CreateLine
-  textPrefab: {fileID: 554195790789398467, guid: 3e2ea329a6d671e5ab07d1d8c8019867, type: 3}
-  slotPrefab: {fileID: 5973676984906471666, guid: 49584983591af7a3c901ba8c46cddb80, type: 3}
-  slotTag: <SLOT>
