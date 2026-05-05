@@ -6,8 +6,20 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/MainMenu.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/FillInPuzzle.unity
+    guid: 14b3c0cbb6ad6fd47ae7598de242a557
+  - enabled: 1
+    path: Assets/Scenes/Connections.unity
+    guid: b3bb0636f9a829d47a57e516a196b45d
+  - enabled: 1
+    path: Assets/Scenes/Kahoot.unity
+    guid: a737b40f099b98f4d8ca37e31709ba86
+  - enabled: 1
+    path: Assets/Scenes/WordSearch.unity
+    guid: cce508197b5c35d4ab4166e74ea5c834
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
