@@ -1,5 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Networking;
+using System.Collections;
+using System.Linq;
 
 public class GridManager : MonoBehaviour
 {
@@ -9,13 +12,38 @@ public class GridManager : MonoBehaviour
     public List<string> wordsToFind;
     private string polishChars = "AĄBCĆDEĘFGHIJKLŁMNŃOQÓPRSŚTUVWYXZŹŻ";
 
+
+    [System.Serializable]
+    public class WordData
+    {
+        public List<string> words;
+    }
     void Awake() 
     {
-        wordsToFind = new List<string> { "JAVA", "HASKELL", "ERLANG", "GEOMY" };
+        StartCoroutine(getRequest("http://localhost:8080/game/wordsearch"));
+        // wordsToFind = new List<string> { "JAVA", "HASKELL", "ERLANG", "GEOMY" };
     }
 
+    IEnumerator getRequest(string uri)
+{
+    UnityWebRequest uwr = UnityWebRequest.Get(uri);
+    yield return uwr.SendWebRequest();
+
+    if (uwr.result == UnityWebRequest.Result.ConnectionError || uwr.result == UnityWebRequest.Result.ProtocolError)
+    {
+        Debug.Log("Error: " + uwr.error);
+    }
+    else
+    {
+        string jsonResponse = uwr.downloadHandler.text;
+        Debug.Log("Received: " + jsonResponse);
+        WordData data = JsonUtility.FromJson<WordData>(jsonResponse);
+        wordsToFind = data.words.Select(w => w.ToUpper()).ToList();
+    }
+}
+
     void Start() 
-    { 
+    {   
         GenerateBoard(); 
     }
     public void GenerateBoard()
