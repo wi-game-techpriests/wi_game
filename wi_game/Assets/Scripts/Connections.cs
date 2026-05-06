@@ -1,15 +1,35 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Connections : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public Image[] images;
+    public Sprite unselectedSprite;
+    public Sprite selectedSprite;
+
+    private int selectedCount = 0;
+
     void Start()
     {
         Debug.Log("Connections game started.");
     }
 
-    public void Select(int id)
+    public void Click(int id)
     {
-        Debug.Log("Selected tile with id " + id + " at time " + Time.time);
+        if (images[id].sprite == unselectedSprite)
+        {
+            if (selectedCount >= 4)
+            {
+                Debug.Log("Cannot select more than 4 connections.");
+                return;
+            }
+            selectedCount++;
+            images[id].sprite = selectedSprite;
+        }
+        else
+        {
+            selectedCount--;
+            images[id].sprite = unselectedSprite;
+        }
     }
 }
