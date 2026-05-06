@@ -1,0 +1,38 @@
+{
+  "categoryA": {
+    "categoryName": "aaaa",
+    "categoryWords": [
+      "bbb",
+      "ccc",
+      "ddd",
+      "eee"
+    ]
+  },
+  "categoryB": {
+    "categoryName": "aqaara",
+    "categoryWords": [
+      "eree",
+      "frff",
+      "ddrd",
+      "ccrc"
+    ]
+  },
+  "categoryC": {
+    "categoryName": "a1aaa",
+    "categoryWords": [
+      "dd1d",
+      "bb1b",
+      "e11ee",
+      "f1ff"
+    ]
+  },
+  "categoryD": {
+    "categoryName": "aaara",
+    "categoryWords": [
+      "frff",
+      "ddrd",
+      "ccrc",
+      "bbrb"
+    ]
+  }
+}
