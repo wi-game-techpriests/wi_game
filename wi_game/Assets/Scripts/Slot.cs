@@ -14,4 +14,11 @@ public class Slot : MonoBehaviour, IDropHandler
             option.ChangeSnap(transform);
         }
     }
+
+    public bool IsCorrect()
+    {
+        if (currentOption == null) return false;
+
+        return currentOption.text == acceptedOption;
+    }
 }

@@ -1,11 +1,16 @@
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Diagnostics;
+using System;
+using TMPro;
 public class FillInPuzzle : MonoBehaviour
 {
     public int textHeight;
     public int slotWidth;
     public int padding;
+    public int scoreForCorrect;
+    public int scoreForTime;
 
     [TextArea(15,20)]
     public string text;
@@ -14,26 +19,37 @@ public class FillInPuzzle : MonoBehaviour
 
     public FillInText textArea;
     public FillInOptions optionArea;
-
+    public GameObject endGame;
+    public TextMeshProUGUI scoreText;
 
     private List<Slot> slots;
+
+    private Stopwatch stopwatch;
 
 
     void Start()
     {
         Setup();
+
+        stopwatch = new();
+        stopwatch.Start();
     }
 
+    static T[] ShuffleArray<T>(T[] array)
+    {
+        System.Random random = new System.Random();
+        return array.OrderBy(x => random.Next()).ToArray();
+    }
 
     public void Setup()
     {
-        //Create UI
+        //Create UI 
         slots = textArea.CreateText(text,textHeight,slotWidth,padding);
-        optionArea.CreateOptions(options,4,textHeight,slotWidth);
+        optionArea.CreateOptions(ShuffleArray(options),4,textHeight,slotWidth);
 
         if (slots.Count > options.Length)
         {
-            Debug.LogError("Not enough options");
+            throw new IndexOutOfRangeException();
         }
 
         //Assign accepted values to slots
@@ -41,5 +57,20 @@ public class FillInPuzzle : MonoBehaviour
         {
             slots[i].acceptedOption = options[i];
         }
+    }
+
+
+    public void CheckScore()
+    {
+        int score = 0;
+        foreach (Slot slot in slots)
+        {
+            if (slot.IsCorrect()) score += scoreForCorrect;
+        }
+        stopwatch.Stop();
+        TimeSpan time = stopwatch.Elapsed;
+        score += (int)(1 / (float)time.Seconds * scoreForTime);
+        scoreText.text = score.ToString();
+        endGame.SetActive(true);
     }
 }
