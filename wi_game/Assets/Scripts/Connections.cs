@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 [Serializable]
@@ -33,10 +35,13 @@ public class Connections : MonoBehaviour
     public Sprite selectedSprite;
     public TextMeshProUGUI[] words;
 
+    private string url = "http://localhost:8080/test/connections";
     private int selectedCount = 0;
 
     void Start()
     {
+        // StartCoroutine(LoadFromServer());
+        // return;
         TextAsset jsonFile = Resources.Load<TextAsset>("connections_data");
         CategoryWrapper data = JsonUtility.FromJson<CategoryWrapper>(jsonFile.text);
         
@@ -53,6 +58,45 @@ public class Connections : MonoBehaviour
         }
 
         Debug.Log("Connections game started.");
+    }
+
+    IEnumerator<UnityWebRequestAsyncOperation> LoadFromServer()
+    {
+        UnityWebRequest request = UnityWebRequest.Get(url);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Błąd pobierania: " + request.error);
+            yield break;
+        }
+
+        string json = request.downloadHandler.text;
+
+        // Parsowanie
+        CategoryWrapper data = JsonUtility.FromJson<CategoryWrapper>(json);
+
+        // Zbieranie słów
+        List<string> allWords = new List<string>();
+
+        foreach (var category in data.ToList())
+        {
+            allWords.AddRange(category.categoryWords);
+        }
+
+        // Mieszanie
+        for (int i = 0; i < allWords.Count; i++)
+        {
+            int rnd = UnityEngine.Random.Range(i, allWords.Count);
+            (allWords[i], allWords[rnd]) = (allWords[rnd], allWords[i]);
+        }
+
+        // Przypisanie do UI
+        for (int i = 0; i < words.Length; i++)
+        {
+            words[i].text = allWords[i];
+        }
     }
 
     public void Click(int id)
