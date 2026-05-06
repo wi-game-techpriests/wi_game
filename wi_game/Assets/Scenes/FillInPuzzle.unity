@@ -241,15 +241,18 @@ MonoBehaviour:
   textHeight: 150
   slotWidth: 400
   padding: 20
-  text: "def avg(<SLOT>):\n    result = <SLOT>\n    for <SLOT> in tab:\n        <SLOT>\n   
-    <SLOT>\n    return result"
+  text: "def avg(<SLOT>):\n    result <SLOT>\n    for <SLOT> in tab:\n        result
+    <SLOT>\n    result <SLOT>\n    return result"
   options:
   - tab
-  - result += n
+  - = 0
   - n
+  - += n
   - /= len(tab)
-  - 1
-  - 0
+  - = 1
+  - = n
+  - -= n
+  - += len(tab)
   textArea: {fileID: 1083423177}
   optionArea: {fileID: 2005594758}
 --- !u!1 &1037750477

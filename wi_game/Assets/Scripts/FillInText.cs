@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,8 +11,10 @@ public class FillInText : MonoBehaviour
     public string slotTag;
 
     
-    public void CreateText(string text, int height, int slotWidth, int padding)
+    public List<Slot> CreateText(string text, int height, int slotWidth, int padding)
     {
+        List<Slot> slots = new();
+
         var parts = text.Split('\n');
         foreach (var part in parts)
         {
@@ -20,16 +23,20 @@ public class FillInText : MonoBehaviour
 
             lineLayout.spacing = padding;
 
-            CreateLine(lineObject,part,height,slotWidth,padding);
+            slots.AddRange(CreateLine(lineObject,part,height,slotWidth,padding));
         }
 
+        //Reload UI
         LayoutRebuilder.ForceRebuildLayoutImmediate(
             GetComponent<RectTransform>()
         );
+        return slots;
     }
 
-    public void CreateLine(GameObject line, string rawLine,int height, int slotWidth, int padding)
+    public List<Slot> CreateLine(GameObject line, string rawLine,int height, int slotWidth, int padding)
     {
+        List<Slot> slots = new();
+
         string[] parts = rawLine.Split(slotTag);
         for (int i = 0; i < parts.Length; i++)
         {
@@ -62,10 +69,12 @@ public class FillInText : MonoBehaviour
             {
                 var slot = Instantiate(slotPrefab,line.transform);
                 var layout = slot.GetComponent<LayoutElement>();
+                slots.Add(slot.GetComponent<Slot>());
                 //Change size
                 layout.preferredHeight = height;
                 layout.preferredWidth = slotWidth;
             }
         }
+        return slots;
     }
 }
