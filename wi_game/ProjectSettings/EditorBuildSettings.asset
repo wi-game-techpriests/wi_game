@@ -20,6 +20,21 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WordSearch.unity
     guid: cce508197b5c35d4ab4166e74ea5c834
+  - enabled: 1
+    path: Assets/Scenes/Test_Connections.unity
+    guid: e5372fb9f566aed469bb6f8e5770fc16
+  - enabled: 1
+    path: Assets/Scenes/Test_FillInPuzzle.unity
+    guid: 67fde89cc54a6cf4f9ca7642bdfb900f
+  - enabled: 1
+    path: Assets/Scenes/Test_Kahoot.unity
+    guid: 855f7ba3475118f4fbd774281f72f69f
+  - enabled: 1
+    path: Assets/Scenes/Test_WordSearch.unity
+    guid: 600dd03a791d0764a9f711e5e34dfa2f
+  - enabled: 1
+    path: Assets/Scenes/Test_Leaderboard.unity
+    guid: 4cf9ea6cfb6c5914aa6c2e09e1f82ede
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
