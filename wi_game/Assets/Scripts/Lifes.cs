@@ -22,6 +22,8 @@ public class Lifes : MonoBehaviour
         {
             lifeImages[0].sprite = deadSprite;
             Debug.Log("Game Over!");
+            MainGameController mainGameController = FindAnyObjectByType<MainGameController>();
+            mainGameController.EndGame();
         }
     }
 }
