@@ -2,7 +2,15 @@
 
 Projekt gry promującej Wydział Informatki AGH tworzony przez zespół *TechKapłani* w ramach przedmiotu *Inżynieria Oprogramowania*.
 
-## Definition of done:
+## Definition of Done:
+
+- Funkcjonalność działa w środowisku lokalnym
+- Przechodzą wszystkie stworzone testy jednostkowe
+- Co najmniej 1 ososba zrobiła code review do pr
+- Zmiany skutecznie mergują się do main
+- (opcjonalnie) przechodzi workflow automatycznej kompilacji do WebGL i deploymentu na github pages
+
+## Funkcjonalności:
 
 #### Rozgrywka
 
@@ -16,9 +24,9 @@ Projekt gry promującej Wydział Informatki AGH tworzony przez zespół *TechKap
 
 #### Backend
 
-* Można tworzyć wiele sesji w tym samym czasie.
-* Gracz nie może się zapisać do nieaktywnej/nieistniejącej sesji
-* Gracz nie może mieć nicku już istniejącego w ramach danej sesji
-* Tylko zapisani gracze mają dostęp do pobierania danych minigier i publikowania wyniku (token)
-* Gracz może podejrzeć wyniki graczy wyłącznie z sesji do której jest zapisany
-* Dane do minigier są wybierane losowo z bazy danych
+1. Można tworzyć wiele sesji w tym samym czasie.
+2. Gracz nie może się zapisać do nieaktywnej/nieistniejącej sesji
+3. Gracz nie może mieć nicku już istniejącego w ramach danej sesji
+4. Tylko zapisani gracze mają dostęp do pobierania danych minigier i publikowania wyniku (token)
+5. Gracz może podejrzeć wyniki graczy wyłącznie z sesji do której jest zapisany
+6. Dane do minigier są wybierane losowo z bazy danych
