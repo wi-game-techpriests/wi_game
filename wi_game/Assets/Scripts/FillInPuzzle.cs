@@ -1,9 +1,10 @@
 using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 using System;
 using TMPro;
+using System.Collections;
+using System.Collections.Generic;
 public class FillInPuzzle : MonoBehaviour
 {
     public int textHeight;
@@ -11,6 +12,7 @@ public class FillInPuzzle : MonoBehaviour
     public int padding;
     public int scoreForCorrect;
     public int scoreForTime;
+    public float timeScaling;
 
     [TextArea(15,20)]
     public string text;
@@ -59,8 +61,13 @@ public class FillInPuzzle : MonoBehaviour
         }
     }
 
+    private float TimeFormula(float time)
+    {
+        return timeScaling / (time + timeScaling);
+    }
 
-    public void CheckScore()
+
+    IEnumerator CheckScoreInternal()
     {
         int score = 0;
         foreach (Slot slot in slots)
@@ -69,8 +76,14 @@ public class FillInPuzzle : MonoBehaviour
         }
         stopwatch.Stop();
         TimeSpan time = stopwatch.Elapsed;
-        score += (int)(1 / (float)time.Seconds * scoreForTime);
+        score += (int)(TimeFormula(time.Seconds) * scoreForTime);
+        yield return new WaitForSeconds(3);
         scoreText.text = score.ToString();
         endGame.SetActive(true);
+    }
+
+    public void CheckScore()
+    {
+        StartCoroutine(CheckScoreInternal());
     }
 }
