@@ -99,6 +99,7 @@ public class TouchManager : MonoBehaviour
 
         if (gridManager.wordsToFind.Contains(word))
         {
+            gridManager.WordFound();
             DrawStrikeLine();
             
             gridManager.wordsToFind.Remove(word);

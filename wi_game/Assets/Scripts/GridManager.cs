@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Linq;
+using TMPro;
 
 public class GridManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class GridManager : MonoBehaviour
     public int columns = 8;
     public List<string> wordsToFind;
     private string polishChars = "AĄBCĆDEĘFGHIJKLŁMNŃOQÓPRSŚTUVWYXZŹŻ";
+    [SerializeField] private TextMeshProUGUI Remaining; // Referencja do UI
+    private int cnt;
 
 
     [System.Serializable]
@@ -22,6 +25,7 @@ public class GridManager : MonoBehaviour
     {
         StartCoroutine(getRequest("http://localhost:8080/game/wordsearch"));
         // wordsToFind = new List<string> { "JAVA", "HASKELL", "ERLANG", "GEOMY" };
+        ActualizeCnt();
     }
 
     IEnumerator getRequest(string uri)
@@ -39,6 +43,8 @@ public class GridManager : MonoBehaviour
         Debug.Log("Received: " + jsonResponse);
         WordData data = JsonUtility.FromJson<WordData>(jsonResponse);
         wordsToFind = data.words.Select(w => w.ToUpper()).ToList();
+        cnt = wordsToFind.Count;
+        ActualizeCnt();
     }
 }
 
@@ -117,4 +123,18 @@ public class GridManager : MonoBehaviour
         }
         return true;
     }
+
+    public void WordFound()
+    {
+        cnt--;
+        ActualizeCnt();
+    }
+
+    private void ActualizeCnt()
+{
+    if (Remaining != null)
+    {
+        Remaining.text = "Pozostało: " + cnt;
+    }
+}
 }
