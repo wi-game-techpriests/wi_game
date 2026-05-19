@@ -121,8 +121,8 @@ public class TouchManager : MonoBehaviour
             winPanel.transform.SetAsLastSibling(); 
             
             int minutes = Mathf.FloorToInt(elapsedTime / 60);
-            int seconds = Mathf.FloorToInt(elapsedTime % 60);
-            timerText.text = string.Format("TWÓJ CZAS: {0:00}:{1:00}", minutes, seconds);
+            int score = 1000 - 100 *minutes;
+            timerText.text = "" + score;
         }
     }
 
