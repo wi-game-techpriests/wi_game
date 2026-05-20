@@ -15,8 +15,8 @@ public class TouchManager : MonoBehaviour
     public List<LetterTile> selectedTiles = new List<LetterTile>();
     public GridManager gridManager;
     public GameObject linePrefab;
-    public GameObject winPanel;
     public TextMeshProUGUI timerText;
+    public MainGameController game;
 
     private Vector2Int? lastGridPos = null;
     private Vector2Int? direction = null;
@@ -115,20 +115,11 @@ public class TouchManager : MonoBehaviour
     private void ShowWinScreen()
     {
         isGameOver = true;
-        if (winPanel != null)
-        {
-            winPanel.SetActive(true);
-            winPanel.transform.SetAsLastSibling(); 
-            
-            int minutes = Mathf.FloorToInt(elapsedTime / 60);
-            int score = 1000 - 100 *minutes;
-            timerText.text = "" + score;
-        }
-    }
-
-    public void RestartGame()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        int minutes = Mathf.FloorToInt(elapsedTime / 60);
+        int score = 1000 - 100 *minutes;
+        timerText.text = "" + score;
+        game.EndGame();
+        
     }
 
     private void DrawStrikeLine()
@@ -159,4 +150,22 @@ public class TouchManager : MonoBehaviour
         lastGridPos = null;
         direction = null;
     }
+
+    public void ResetTouchManager()
+{
+    isGameOver = false;
+    elapsedTime = 0f;
+    
+    selectedTiles.Clear();
+    lastGridPos = null;
+    direction = null;
+
+    foreach (Transform child in gridManager.transform.parent)
+    {
+        if (child.gameObject.name.Contains("Line") || child.gameObject.name.Contains("line"))
+        {
+            Destroy(child.gameObject);
+        }
+    }
+}
 }

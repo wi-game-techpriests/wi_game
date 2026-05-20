@@ -23,7 +23,6 @@ public class GridManager : MonoBehaviour
     }
     void Awake() 
     {
-        StartCoroutine(getRequest("http://localhost:8080/game/wordsearch"));
         // wordsToFind = new List<string> { "JAVA", "HASKELL", "ERLANG", "GEOMY" };
         ActualizeCnt();
     }
@@ -46,11 +45,16 @@ public class GridManager : MonoBehaviour
         cnt = wordsToFind.Count;
         ActualizeCnt();
     }
+    GenerateBoard();
 }
 
     void Start() 
     {   
-        GenerateBoard(); 
+        StartCoroutine(getRequest("http://localhost:8080/game/wordsearch"));
+    }
+    public void StartAgain()
+    {
+        StartCoroutine(getRequest("http://localhost:8080/game/wordsearch"));
     }
     public void GenerateBoard()
     {
