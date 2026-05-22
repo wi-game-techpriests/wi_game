@@ -1,0 +1,38 @@
+{
+  "categoryA": {
+    "categoryName": "aaaa",
+    "categoryWords": [
+      "a",
+      "aa",
+      "aaa",
+      "aaaa"
+    ]
+  },
+  "categoryB": {
+    "categoryName": "bbbb",
+    "categoryWords": [
+      "b",
+      "bb",
+      "bbb",
+      "bbbb"
+    ]
+  },
+  "categoryC": {
+    "categoryName": "cccc",
+    "categoryWords": [
+      "c",
+      "cc",
+      "ccc",
+      "cccc"
+    ]
+  },
+  "categoryD": {
+    "categoryName": "dddd",
+    "categoryWords": [
+      "d",
+      "dd",
+      "ddd",
+      "dddd"
+    ]
+  }
+}
