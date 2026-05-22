@@ -2,37 +2,37 @@
   "categoryA": {
     "categoryName": "aaaa",
     "categoryWords": [
-      "bbb",
-      "ccc",
-      "ddd",
-      "eee"
+      "a",
+      "aa",
+      "aaa",
+      "aaaa"
     ]
   },
   "categoryB": {
-    "categoryName": "aqaara",
+    "categoryName": "bbbb",
     "categoryWords": [
-      "eree",
-      "frff",
-      "ddrd",
-      "ccrc"
+      "b",
+      "bb",
+      "bbb",
+      "bbbb"
     ]
   },
   "categoryC": {
-    "categoryName": "a1aaa",
+    "categoryName": "cccc",
     "categoryWords": [
-      "dd1d",
-      "bb1b",
-      "e11ee",
-      "f1ff"
+      "c",
+      "cc",
+      "ccc",
+      "cccc"
     ]
   },
   "categoryD": {
-    "categoryName": "aaara",
+    "categoryName": "dddd",
     "categoryWords": [
-      "frff",
-      "ddrd",
-      "ccrc",
-      "bbrb"
+      "d",
+      "dd",
+      "ddd",
+      "dddd"
     ]
   }
 }
