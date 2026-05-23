@@ -35,6 +35,11 @@ public class GridManager : MonoBehaviour
     if (uwr.result == UnityWebRequest.Result.ConnectionError || uwr.result == UnityWebRequest.Result.ProtocolError)
     {
         Debug.Log("Error: " + uwr.error);
+        List<string> backupWords = new List<string> { "HASKELL", "RUBY", "ICON", "FORTRAN", "JAVA", "SCALA" };
+        wordsToFind = backupWords.Select(w => w.ToUpper()).ToList();
+        
+        cnt = wordsToFind.Count;
+        ActualizeCnt();
     }
     else
     {

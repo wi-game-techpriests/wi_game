@@ -35,7 +35,7 @@ public class TouchManager : MonoBehaviour
         if (isGameOver) return;
         elapsedTime += Time.deltaTime;
         if (touchPressAction.IsPressed()) DetectTile();
-        else if (touchPressAction.WasReleasedThisFrame())
+        else if (selectedTiles.Count > 0)
         {
             CheckWord();
             ClearSelection();
@@ -46,6 +46,13 @@ public class TouchManager : MonoBehaviour
 {
     Vector2 pos = touchPositionAction.ReadValue<Vector2>();
     PointerEventData eventData = new PointerEventData(EventSystem.current) { position = pos };
+
+    var currentPointer = Pointer.current;
+    if (currentPointer != null)
+    {
+        eventData.pointerId = currentPointer.deviceId;
+    }
+
     List<RaycastResult> results = new List<RaycastResult>();
     EventSystem.current.RaycastAll(eventData, results);
 
