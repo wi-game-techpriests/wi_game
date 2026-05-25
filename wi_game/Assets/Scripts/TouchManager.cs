@@ -18,6 +18,8 @@ public class TouchManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public MainGameController game;
 
+    public GameManager gameManager;
+
     private Vector2Int? lastGridPos = null;
     private Vector2Int? direction = null;
     private float elapsedTime = 0f;
@@ -131,6 +133,7 @@ public class TouchManager : MonoBehaviour
         int minutes = Mathf.FloorToInt(elapsedTime / 60);
         int score = 1000 - 100 *minutes;
         timerText.text = "" + score;
+        GameManager.Instance.SetCurrentScore(score);
         game.EndGame();
         
     }
