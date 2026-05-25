@@ -2472,7 +2472,7 @@ MonoBehaviour:
   - Test_WordSearch
   - Test_FillInPuzzle
   - Test_Kahoot
-  - Test_Leaderboard
+  endScene: Test_Leaderboard
   fadeDuration: 1
 --- !u!1 &2123784998
 GameObject:
