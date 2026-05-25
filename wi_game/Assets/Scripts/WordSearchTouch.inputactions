@@ -51,7 +51,7 @@
                 {
                     "name": "",
                     "id": "7d505889-0ee2-4dab-b97d-c11a3db3a6f1",
-                    "path": "<Touchscreen>/touch1/press",
+                    "path": "<Touchscreen>/primaryTouch/press",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
