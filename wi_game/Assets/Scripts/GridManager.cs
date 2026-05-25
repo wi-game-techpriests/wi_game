@@ -27,39 +27,39 @@ public class GridManager : MonoBehaviour
         ActualizeCnt();
     }
 
-    IEnumerator getRequest(string uri)
-{
-    UnityWebRequest uwr = UnityWebRequest.Get(uri);
-    yield return uwr.SendWebRequest();
-
-    if (uwr.result == UnityWebRequest.Result.ConnectionError || uwr.result == UnityWebRequest.Result.ProtocolError)
-    {
-        Debug.Log("Error: " + uwr.error);
-        List<string> backupWords = new List<string> { "HASKELL", "RUBY", "ICON", "FORTRAN", "JAVA", "SCALA" };
-        wordsToFind = backupWords.Select(w => w.ToUpper()).ToList();
-        
-        cnt = wordsToFind.Count;
-        ActualizeCnt();
-    }
-    else
-    {
-        string jsonResponse = uwr.downloadHandler.text;
-        Debug.Log("Received: " + jsonResponse);
-        WordData data = JsonUtility.FromJson<WordData>(jsonResponse);
-        wordsToFind = data.words.Select(w => w.ToUpper()).ToList();
-        cnt = wordsToFind.Count;
-        ActualizeCnt();
-    }
-    GenerateBoard();
-}
 
     void Start() 
-    {   
-        StartCoroutine(getRequest("http://localhost:8080/game/wordsearch"));
+    { 
+        FetchWordSearchData();
     }
     public void StartAgain()
     {
-        StartCoroutine(getRequest("http://localhost:8080/game/wordsearch"));
+        FetchWordSearchData();
+    }
+
+    private void FetchWordSearchData()
+    {
+        GameManager.Instance.GetGameData("wordsearch", 
+            (jsonData) => {
+                Debug.Log("Dane wordsearch: " + jsonData);
+                
+                WordData data = JsonUtility.FromJson<WordData>(jsonData);
+                wordsToFind = data.words.Select(w => w.ToUpper()).ToList();
+                cnt = wordsToFind.Count;
+                ActualizeCnt();
+                GenerateBoard();
+            },
+            (error) => {
+                Debug.LogError("Błąd: " + error);
+                
+                List<string> backupWords = new List<string> { "HASKELL", "RUBY", "ICON", "FORTRAN", "JAVA", "SCALA" };
+                wordsToFind = backupWords.Select(w => w.ToUpper()).ToList();
+                
+                cnt = wordsToFind.Count;
+                ActualizeCnt();
+                GenerateBoard();
+            }
+        );
     }
     public void GenerateBoard()
     {

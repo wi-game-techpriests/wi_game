@@ -18,7 +18,6 @@ public class TouchManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public MainGameController game;
 
-    public GameManager gameManager;
 
     private Vector2Int? lastGridPos = null;
     private Vector2Int? direction = null;
