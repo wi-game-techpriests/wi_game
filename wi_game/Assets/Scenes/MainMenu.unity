@@ -3168,7 +3168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   scenes:
   - Connections
-  - Test_WordSearch
+  - WordSearch
   - Test_FillInPuzzle
   - Test_Kahoot
   endScene: Test_Leaderboard
