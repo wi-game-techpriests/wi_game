@@ -1808,6 +1808,8 @@ MonoBehaviour:
   info: {fileID: 467690098}
   game: {fileID: 919503762}
   summary: {fileID: 1025853968}
+  retryButton: {fileID: 702214569}
+  scoreText: {fileID: 857725161}
 --- !u!114 &1162803439
 MonoBehaviour:
   m_ObjectHideFlags: 0
