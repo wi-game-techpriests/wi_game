@@ -273,10 +273,70 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    public void SubmitResults()
+    {
+        StartCoroutine(SendResults());
+    }
+
+    private IEnumerator SendResults()
+    {
+        var results = new ResultsData
+        {
+            token = sessionToken,
+            connectionsPoints = Random.Range(0, 100),
+            fillInPoints = Random.Range(0, 100),
+            wordSearchPoints = Random.Range(0, 100),
+            kahootPoints = Random.Range(0, 100)
+        };
+
+        // var results = new ResultsData
+        // {
+        //     token = sessionToken,
+        //     connectionsPoints = GetAllResults().ContainsKey("connections") ? GetAllResults()["connections"] : 0,
+        //     fillInPoints = GetAllResults().ContainsKey("fill_in") ? GetAllResults()["fill_in"] : 0,
+        //     wordSearchPoints = GetAllResults().ContainsKey("wordsearch") ? GetAllResults()["wordsearch"] : 0,
+        //     kahootPoints = GetAllResults().ContainsKey("kahoot") ? GetAllResults()["kahoot"] : 0
+        // };
+
+        string json = JsonUtility.ToJson(results);
+        string url = $"{backendUrl}/game/submit";
+
+        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+        {
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Authorization", "Bearer " + sessionToken);
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Accept", "application/json");
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Wyniki wysłane pomyślnie!");
+            }
+            else
+            {
+                Debug.LogError($"Błąd wysyłania wyników: {request.responseCode} - {request.error}");
+            }
+        }
+    }
 }
 
 [System.Serializable]
 public class TokenResponse
 {
     public string token;
+}
+
+[System.Serializable]
+public class ResultsData
+{
+    public string token;
+    public int connectionsPoints;
+    public int fillInPoints;
+    public int wordSearchPoints;
+    public int kahootPoints;
 }
