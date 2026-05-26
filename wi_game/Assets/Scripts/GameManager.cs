@@ -101,7 +101,10 @@ public class GameManager : MonoBehaviour
 
     public void SetSceneResult(int result)
     {
-        sceneResults[currentSceneName] = result;
+        if (sceneResults[currentSceneName] < result)
+        {
+            sceneResults[currentSceneName] = result;
+        }
         Debug.Log($"Scene '{currentSceneName}' result saved: {result}");
     }
 
