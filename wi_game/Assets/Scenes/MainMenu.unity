@@ -3170,7 +3170,7 @@ MonoBehaviour:
   - Connections
   - WordSearch
   - Test_FillInPuzzle
-  - Test_Kahoot
+  - Kahoot
   endScene: Leaderboard
   fadeDuration: 1
   popupPrefab: {fileID: 1935277985}
