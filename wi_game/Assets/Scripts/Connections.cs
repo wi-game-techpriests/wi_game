@@ -25,17 +25,17 @@ public class CategoryWrapper
         return new List<Category> { categoryA, categoryB, categoryC, categoryD };
     }
 
-    public bool IsCorrect(List<string> selectedWords)
+    public string CheckCategory(List<string> selectedWords)
     {
         var categories = ToList();
         foreach (var category in categories)
         {
             if (selectedWords.All(word => category.categoryWords.Contains(word)))
             {
-                return true;
+                return category.categoryName;
             }
         }
-        return false;
+        return null;
     }
 }
 
@@ -55,6 +55,8 @@ public class Connections : MonoBehaviour
     private int currentTry = 3;
     private List<string> selectedWords = new List<string>(4);
     private int score = 0;
+    private float gameStartTime;
+    private int categoriesSolved = 0;
 
     public void StartGame()
     {
@@ -75,6 +77,8 @@ public class Connections : MonoBehaviour
         }
         currentTry = 3;
         score = 0;
+        gameStartTime = Time.time;
+        categoriesSolved = 0;
     }
 
     private void FetchData()
@@ -141,13 +145,19 @@ public class Connections : MonoBehaviour
 
         if (currentTry > 0)
         {
-            if (categoryData.IsCorrect(selectedWords))
+            string correctCategory = categoryData.CheckCategory(selectedWords);
+            if (correctCategory != null)
             {
-                score += 25;
-                if (score >= 75)
+                float elapsedTime = Time.time - gameStartTime;
+                int pointsEarned = Mathf.Max(5, 60 - (int)elapsedTime);
+                score += pointsEarned;
+                categoriesSolved++;
+                Debug.Log($"Kategoria {correctCategory} znaleziona! Czas: {elapsedTime:F1}s, Punkty: {pointsEarned}, Razem: {score}");
+                
+                if (categoriesSolved >= 3)
                 {
-                    GameManager.Instance.SetCurrentScore(100);
-                    GameManager.Instance.SetSceneResult(100);
+                    GameManager.Instance.SetCurrentScore(score);
+                    GameManager.Instance.SetSceneResult(score);
                     mainGameController.EndGame();
                 }
                 else
