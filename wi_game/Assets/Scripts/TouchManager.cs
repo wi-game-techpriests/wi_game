@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro; 
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
+using System;
 
 public class TouchManager : MonoBehaviour
 {
@@ -126,11 +127,13 @@ public class TouchManager : MonoBehaviour
         }
     }
 
-    private void ShowWinScreen()
+    public void ShowWinScreen()
     {
         isGameOver = true;
         int minutes = Mathf.FloorToInt(elapsedTime / 60);
-        int score = 1000 - 100 *minutes;
+        int score = 1000 - 100 * (minutes + gridManager.wordsToFind.Count);
+        score = Math.Max(0, score);
+
         timerText.text = "" + score;
         GameManager.Instance.SetCurrentScore(score);
         game.EndGame();
