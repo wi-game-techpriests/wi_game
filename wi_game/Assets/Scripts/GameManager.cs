@@ -284,20 +284,11 @@ public class GameManager : MonoBehaviour
         var results = new ResultsData
         {
             token = sessionToken,
-            connectionsPoints = Random.Range(0, 100),
-            fillInPoints = Random.Range(0, 100),
-            wordSearchPoints = Random.Range(0, 100),
-            kahootPoints = Random.Range(0, 100)
-        };
-
-        // var results = new ResultsData
-        // {
-        //     token = sessionToken,
-        //     connectionsPoints = GetAllResults().ContainsKey("connections") ? GetAllResults()["connections"] : 0,
-        //     fillInPoints = GetAllResults().ContainsKey("fill_in") ? GetAllResults()["fill_in"] : 0,
-        //     wordSearchPoints = GetAllResults().ContainsKey("wordsearch") ? GetAllResults()["wordsearch"] : 0,
-        //     kahootPoints = GetAllResults().ContainsKey("kahoot") ? GetAllResults()["kahoot"] : 0
-        // };
+            connectionsPoints = GetAllResults().ContainsKey("connections") ? GetAllResults()["connections"] : 0,
+            fillInPoints = GetAllResults().ContainsKey("fill_in") ? GetAllResults()["fill_in"] : 0,
+            wordSearchPoints = GetAllResults().ContainsKey("wordsearch") ? GetAllResults()["wordsearch"] : 0,
+            kahootPoints = GetAllResults().ContainsKey("kahoot") ? GetAllResults()["kahoot"] : 0
+         };
 
         string json = JsonUtility.ToJson(results);
         string url = $"{backendUrl}/game/submit";
