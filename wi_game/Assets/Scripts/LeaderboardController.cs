@@ -92,10 +92,7 @@ public class LeaderboardController : MonoBehaviour
                 texts[1].text = playerName;
                 texts[2].text = data.scores[i].score.ToString(); // Wynik
                 
-                bool isSecondPlace = (position == 2);
-                bool isPlayerRow = (position-1 == data.playerPosition);
-                
-                if (isSecondPlace || isPlayerRow)
+                if (position-1 == data.playerPosition)
                 {
                     foreach (var text in texts)
                     {
