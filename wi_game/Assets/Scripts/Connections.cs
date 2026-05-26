@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 [Serializable]
@@ -25,6 +24,19 @@ public class CategoryWrapper
     {
         return new List<Category> { categoryA, categoryB, categoryC, categoryD };
     }
+
+    public bool IsCorrect(List<string> selectedWords)
+    {
+        var categories = ToList();
+        foreach (var category in categories)
+        {
+            if (selectedWords.All(word => category.categoryWords.Contains(word)))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 public class Connections : MonoBehaviour
@@ -32,88 +44,133 @@ public class Connections : MonoBehaviour
     public Image[] tileImages;
     public Sprite unselectedSprite;
     public Sprite selectedSprite;
+    public Sprite doneSprite;
     public TextMeshProUGUI[] words;
+    public MainGameController mainGameController;
+    public Image[] lifeImages;
+    public Sprite liveSprite;
+    public Sprite deadSprite;
 
-    private string url = "http://localhost:8080/test/connections";
-    private int selectedCount = 0;
+    private CategoryWrapper categoryData;
+    private int currentTry = 3;
+    private List<string> selectedWords = new List<string>(4);
+    private int score = 0;
 
-    void Start()
+    public void StartGame()
     {
-        // StartCoroutine(LoadFromServer());
-        // return;
-        TextAsset jsonFile = Resources.Load<TextAsset>("connections_data");
-        CategoryWrapper data = JsonUtility.FromJson<CategoryWrapper>(jsonFile.text);
-        
-        List<string> allWords = new List<string>();
-        foreach (var category in data.ToList())
-        {
-            allWords.AddRange(category.categoryWords);
-        }
-
-        allWords = allWords.OrderBy(x => UnityEngine.Random.value).ToList();
-        for (int i = 0; i < words.Length; i++)
-        {
-            words[i].text = allWords[i];
-        }
-
-        Debug.Log("Connections game started.");
+        ClearGame();
+        FetchData();
     }
 
-    IEnumerator<UnityWebRequestAsyncOperation> LoadFromServer()
+    private void ClearGame()
     {
-        UnityWebRequest request = UnityWebRequest.Get(url);
-
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
+        selectedWords.Clear();
+        for (int i = 0; i < tileImages.Length; i++)
         {
-            Debug.LogError("Błąd pobierania: " + request.error);
-            yield break;
+            tileImages[i].sprite = unselectedSprite;
         }
-
-        string json = request.downloadHandler.text;
-
-        // Parsowanie
-        CategoryWrapper data = JsonUtility.FromJson<CategoryWrapper>(json);
-
-        // Zbieranie słów
-        List<string> allWords = new List<string>();
-
-        foreach (var category in data.ToList())
+        for (int i = 0; i < lifeImages.Length; i++)
         {
-            allWords.AddRange(category.categoryWords);
+            lifeImages[i].sprite = liveSprite;
         }
-
-        // Mieszanie
-        for (int i = 0; i < allWords.Count; i++)
-        {
-            int rnd = UnityEngine.Random.Range(i, allWords.Count);
-            (allWords[i], allWords[rnd]) = (allWords[rnd], allWords[i]);
-        }
-
-        // Przypisanie do UI
-        for (int i = 0; i < words.Length; i++)
-        {
-            words[i].text = allWords[i];
-        }
+        currentTry = 3;
+        score = 0;
     }
+
+    private void FetchData()
+    {
+        GameManager.Instance.GetGameData("connections", 
+            (jsonData) => {
+                try
+                {
+                    Debug.Log("Fetched data: " + jsonData);
+                    categoryData = JsonUtility.FromJson<CategoryWrapper>(jsonData);
+                    List<string> allWords = new List<string>();
+                    foreach (var category in categoryData.ToList())
+                    {
+                        allWords.AddRange(category.categoryWords);
+                    }
+                    allWords = allWords.OrderBy(x => UnityEngine.Random.value).ToList();
+                    for (int i = 0; i < words.Length; i++)
+                    {
+                        words[i].text = allWords[i];
+                    }
+                    mainGameController.StartGame();
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError("Błąd parsowania JSON: " + ex.Message);
+                }
+            },
+            (error) => {
+                Debug.LogError("Błąd: " + error);
+            }
+        );
+    } 
 
     public void Click(int id)
     {
+        if (tileImages[id].sprite == doneSprite)
+        {
+            return; // Ignore clicks on already completed tiles
+        }
         if (tileImages[id].sprite == unselectedSprite)
         {
-            if (selectedCount >= 4)
+            if (selectedWords.Count >= 4)
             {
                 Debug.Log("Cannot select more than 4 connections.");
                 return;
             }
-            selectedCount++;
             tileImages[id].sprite = selectedSprite;
+            selectedWords.Add(words[id].text);
         }
         else
         {
-            selectedCount--;
             tileImages[id].sprite = unselectedSprite;
+            selectedWords.Remove(words[id].text);
+        }
+    }
+
+    public void Check()
+    {
+        if (selectedWords.Count != 4)
+        {
+            Debug.Log("Please select exactly 4 connections.");
+            return;
+        }
+
+        if (currentTry > 0)
+        {
+            if (categoryData.IsCorrect(selectedWords))
+            {
+                score += 25;
+                if (score >= 75)
+                {
+                    GameManager.Instance.SetCurrentScore(100);
+                    GameManager.Instance.SetSceneResult(100);
+                    mainGameController.EndGame();
+                }
+                else
+                {
+                    for (int i = 0; i < tileImages.Length; i++)
+                    {
+                        if (tileImages[i].sprite == selectedSprite)
+                        {
+                            tileImages[i].sprite = doneSprite;
+                        }
+                    }
+                    selectedWords.Clear();
+                }
+            } else {
+                lifeImages[currentTry].sprite = deadSprite;
+                currentTry--;
+            }
+        }
+        else
+        {
+            GameManager.Instance.SetCurrentScore(score);
+            GameManager.Instance.SetSceneResult(score);
+            mainGameController.EndGame();
         }
     }
 }
