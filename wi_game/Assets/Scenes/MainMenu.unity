@@ -3171,7 +3171,7 @@ MonoBehaviour:
   - WordSearch
   - Test_FillInPuzzle
   - Test_Kahoot
-  endScene: Test_Leaderboard
+  endScene: Leaderboard
   fadeDuration: 1
   popupPrefab: {fileID: 1935277985}
   errorMessageText: {fileID: 1282858640}

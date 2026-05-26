@@ -33,7 +33,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Test_WordSearch.unity
     guid: 600dd03a791d0764a9f711e5e34dfa2f
   - enabled: 1
-    path: Assets/Scenes/Test_Leaderboard.unity
+    path: Assets/Scenes/Leaderboard.unity
     guid: 4cf9ea6cfb6c5914aa6c2e09e1f82ede
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

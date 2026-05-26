@@ -50,6 +50,8 @@ public class MainGameController : MonoBehaviour
             GameManager.Instance.SetSceneResult(score);
         }
 
+        
+
         info.SetActive(false);
         game.SetActive(false);
         summary.SetActive(true);
@@ -61,6 +63,8 @@ public class MainGameController : MonoBehaviour
         {
             retryButton.gameObject.SetActive(false);
         }
+
+
     }
 
     public void NextMinigame()
