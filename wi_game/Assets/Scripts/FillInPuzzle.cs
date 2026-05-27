@@ -140,7 +140,7 @@ public class FillInPuzzle : MonoBehaviour
         stopwatch.Stop();
         TimeSpan time = stopwatch.Elapsed;
         int score = (int)(correct/(float)slots.Count * scoreForCorrect);
-        score += (int)(TimeFormula(Math.Max(0,time.Seconds)) * scoreForTime);
+        score += (int)(TimeFormula((float)Math.Max(0,time.TotalSeconds)) * scoreForTime);
         yield return new WaitForSeconds(1);
         GameManager.Instance.SetCurrentScore(score);
         mainGameController.EndGame();
