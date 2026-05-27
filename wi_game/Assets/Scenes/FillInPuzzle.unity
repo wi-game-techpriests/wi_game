@@ -633,7 +633,7 @@ MonoBehaviour:
   padding: 20
   scoreForCorrect: 700
   scoreForTime: 300
-  timeScaling: 40
+  timeScaling: 60
   backupText: "def avg(<SLOT>):\n    result <SLOT>\n    for <SLOT> in tab:\n       
     result <SLOT>\n    result <SLOT>\n    return result"
   backupTitle: "Uzupe\u0142nij Koc Funkcji (Python)"
