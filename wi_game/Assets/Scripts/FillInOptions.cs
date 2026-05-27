@@ -66,4 +66,12 @@ public class FillInOptions : MonoBehaviour, IDropHandler
         }
     }
 
+    public void ClearOptions()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
 }

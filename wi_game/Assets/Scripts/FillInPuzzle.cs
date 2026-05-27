@@ -5,6 +5,7 @@ using System;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+
 public class FillInPuzzle : MonoBehaviour
 {
     public int textHeight;
@@ -15,27 +16,75 @@ public class FillInPuzzle : MonoBehaviour
     public float timeScaling;
 
     [TextArea(15,20)]
-    public string text;
+    public string backupText;
 
-    public string[] options;
+    public string backupTitle;
+    public string[] backupCorrect;
+
+    public List<string> backupIncorrect;
 
     public FillInText textArea;
     public FillInOptions optionArea;
-    public GameObject endGame;
-    public TextMeshProUGUI scoreText;
+    public MainGameController mainGameController;
+    public TextMeshProUGUI titleTexObject;
 
     private List<Slot> slots;
 
     private Stopwatch stopwatch;
 
-
-    void Start()
+    [System.Serializable]
+    public class FillInAnswer
     {
-        Setup();
-
-        stopwatch = new();
-        stopwatch.Start();
+        public int answerNumber;
+        public string answer;
+        public List<string> otherChoices;
     }
+
+    [System.Serializable]
+    public class FillInData
+    {
+        public List<string> fragments;
+        public List<FillInAnswer> entries;
+    }
+
+    public void StartGame()
+    {
+        Clear();
+
+        titleTexObject.text = "Ładowanie...";
+
+        GameManager.Instance.GetGameData(
+            "fill_in",
+            (jsonData) =>
+            {
+                UnityEngine.Debug.Log(jsonData);
+
+                FillInData data = JsonUtility.FromJson<FillInData>(jsonData);
+
+                List<string> incorrectOptions = new();
+                string[] correctOptions = new string[data.entries.Count];
+
+                int i = 0; //
+                foreach (var answer in data.entries)
+                {
+                    //correctOptions[answer.answerNumber] = answer.answer;
+                    correctOptions[i] = answer.answer; //
+                    i++; //
+
+                    incorrectOptions.AddRange(answer.otherChoices);
+                }
+
+                Setup(data.fragments[0],data.fragments[1],correctOptions,incorrectOptions);
+            },
+            (error) =>
+            {
+                UnityEngine.Debug.LogError(error);
+                Setup(backupTitle,backupText,backupCorrect,backupIncorrect);
+            }
+        );
+    }
+
+
 
     static T[] ShuffleArray<T>(T[] array)
     {
@@ -43,9 +92,20 @@ public class FillInPuzzle : MonoBehaviour
         return array.OrderBy(x => random.Next()).ToArray();
     }
 
-    public void Setup()
+    public void Clear()
     {
-        //Create UI 
+        textArea.ClearText();
+        optionArea.ClearOptions();
+    }
+
+    public void Setup(string titleText, string text, string[] correctOptions, List<string> incorrectOptions)
+    {
+        //Create UI
+        titleTexObject.text = titleText;
+
+        incorrectOptions.AddRange(correctOptions);
+        string[] options = incorrectOptions.ToArray();
+
         slots = textArea.CreateText(text,textHeight,slotWidth,padding);
         optionArea.CreateOptions(ShuffleArray(options),4,textHeight,slotWidth);
 
@@ -57,8 +117,11 @@ public class FillInPuzzle : MonoBehaviour
         //Assign accepted values to slots
         for (int i = 0; i < slots.Count; i++)
         {
-            slots[i].acceptedOption = options[i];
+            slots[i].acceptedOption = correctOptions[i];
         }
+
+        stopwatch = new();
+        stopwatch.Start();
     }
 
     private float TimeFormula(float time)
@@ -69,21 +132,23 @@ public class FillInPuzzle : MonoBehaviour
 
     IEnumerator CheckScoreInternal()
     {
-        int score = 0;
+        int correct = 0;
         foreach (Slot slot in slots)
         {
-            if (slot.IsCorrect()) score += scoreForCorrect;
+            if (slot.IsCorrect()) correct += 1;
         }
         stopwatch.Stop();
         TimeSpan time = stopwatch.Elapsed;
-        score += (int)(TimeFormula(time.Seconds) * scoreForTime);
-        yield return new WaitForSeconds(3);
-        scoreText.text = score.ToString();
-        endGame.SetActive(true);
+        int score = (int)(correct/(float)slots.Count * scoreForCorrect);
+        score += (int)(TimeFormula(Math.Max(0,time.Seconds)) * scoreForTime);
+        yield return new WaitForSeconds(1);
+        GameManager.Instance.SetCurrentScore(score);
+        mainGameController.EndGame();
     }
 
     public void CheckScore()
     {
         StartCoroutine(CheckScoreInternal());
     }
+
 }

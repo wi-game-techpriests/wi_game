@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+[RequireComponent(typeof(RectTransform))]
 
+[RequireComponent(typeof(VerticalLayoutGroup))]
 public class FillInText : MonoBehaviour
 {
     public GameObject linePrefab;
@@ -24,12 +27,15 @@ public class FillInText : MonoBehaviour
             lineLayout.spacing = padding;
 
             slots.AddRange(CreateLine(lineObject,part,height,slotWidth,padding));
+
+
         }
 
-        //Reload UI
+        //Reload UI (this time fr)
         LayoutRebuilder.ForceRebuildLayoutImmediate(
             GetComponent<RectTransform>()
         );
+
         return slots;
     }
 
@@ -58,6 +64,7 @@ public class FillInText : MonoBehaviour
                 textMesh.ForceMeshUpdate();
                 //Change width
                 Vector2 textSize = textMesh.GetRenderedValues(false);
+                textLayout.preferredWidth = textSize.x;
                 textTransform.SetSizeWithCurrentAnchors(
                     RectTransform.Axis.Horizontal,
                     textSize.x
@@ -76,5 +83,13 @@ public class FillInText : MonoBehaviour
             }
         }
         return slots;
+    }
+
+    public void ClearText()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 }
