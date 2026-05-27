@@ -126,7 +126,7 @@ public class FillInPuzzle : MonoBehaviour
 
     private float TimeFormula(float time)
     {
-        return timeScaling / (time + timeScaling);
+        return timeScaling / (Math.Max(time-30,0) + timeScaling);
     }
 
 
