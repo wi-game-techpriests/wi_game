@@ -97,7 +97,7 @@ public class Connections : MonoBehaviour
                     allWords = allWords.OrderBy(x => UnityEngine.Random.value).ToList();
                     for (int i = 0; i < words.Length; i++)
                     {
-                        words[i].text = allWords[i];
+                        words[i].text = allWords[i].Replace("\\n", "\n"); // for text wrapping
                     }
                     mainGameController.StartGame();
                 }
@@ -148,14 +148,15 @@ public class Connections : MonoBehaviour
             string correctCategory = categoryData.CheckCategory(selectedWords);
             if (correctCategory != null)
             {
-                float elapsedTime = Time.time - gameStartTime;
-                int pointsEarned = Mathf.Max(5, 60 - (int)elapsedTime);
+                int elapsedTime = (int)(Time.time - gameStartTime);
+                int pointsEarned = Mathf.Max(10, 260 - 5 * elapsedTime);
                 score += pointsEarned;
                 categoriesSolved++;
                 Debug.Log($"Kategoria {correctCategory} znaleziona! Czas: {elapsedTime:F1}s, Punkty: {pointsEarned}, Razem: {score}");
                 
-                if (categoriesSolved >= 3)
+                if (categoriesSolved > 3)
                 {
+                    score = Mathf.Min(score, 1000);
                     GameManager.Instance.SetCurrentScore(score);
                     GameManager.Instance.SetSceneResult(score);
                     mainGameController.EndGame();
