@@ -64,6 +64,7 @@ public class Connections : MonoBehaviour
     [SerializeField] private LayoutElement activeTilesGridLayout;
     [SerializeField] private GameObject[] solvedCategoryColumns;
     [SerializeField] private TextMeshProUGUI[] solvedCategoryTexts;
+    [SerializeField] private CanvasGroup[] solvedCategoryCanvasGroups;
 
     private CategoryWrapper categoryData;
 
@@ -117,7 +118,24 @@ public class Connections : MonoBehaviour
             {
                 if (solvedCategoryColumns[i] != null)
                 {
+                    RectTransform rectTransform = solvedCategoryColumns[i].GetComponent<RectTransform>();
+                    if (rectTransform != null)
+                    {
+                        rectTransform.localScale = Vector3.one;
+                    }
+
                     solvedCategoryColumns[i].SetActive(false);
+                }
+            }
+        }
+
+        if (solvedCategoryCanvasGroups != null)
+        {
+            for (int i = 0; i < solvedCategoryCanvasGroups.Length; i++)
+            {
+                if (solvedCategoryCanvasGroups[i] != null)
+                {
+                    solvedCategoryCanvasGroups[i].alpha = 1f;
                 }
             }
         }
@@ -287,25 +305,7 @@ public class Connections : MonoBehaviour
     {
         int solvedSlot = categoriesSolved - 1;
 
-        if (
-            solvedCategoryColumns != null &&
-            solvedSlot >= 0 &&
-            solvedSlot < solvedCategoryColumns.Length &&
-            solvedCategoryColumns[solvedSlot] != null
-        )
-        {
-            solvedCategoryColumns[solvedSlot].SetActive(true);
-        }
-
-        if (
-            solvedCategoryTexts != null &&
-            solvedSlot >= 0 &&
-            solvedSlot < solvedCategoryTexts.Length &&
-            solvedCategoryTexts[solvedSlot] != null
-        )
-        {
-            solvedCategoryTexts[solvedSlot].text = categoryName;
-        }
+        ShowSolvedCategory(solvedSlot, categoryName);
 
         foreach (int idx in selectedIndices)
         {
@@ -327,6 +327,111 @@ public class Connections : MonoBehaviour
         selectedIndices.Clear();
 
         RefreshBoardLayout();
+    }
+
+    private void ShowSolvedCategory(int solvedSlot, string categoryName)
+    {
+        if (
+            solvedCategoryColumns == null ||
+            solvedSlot < 0 ||
+            solvedSlot >= solvedCategoryColumns.Length ||
+            solvedCategoryColumns[solvedSlot] == null
+        )
+        {
+            return;
+        }
+
+        if (
+            solvedCategoryTexts != null &&
+            solvedSlot < solvedCategoryTexts.Length &&
+            solvedCategoryTexts[solvedSlot] != null
+        )
+        {
+            solvedCategoryTexts[solvedSlot].text = categoryName;
+        }
+
+        GameObject column = solvedCategoryColumns[solvedSlot];
+
+        column.SetActive(true);
+
+        CanvasGroup canvasGroup = null;
+
+        if (
+            solvedCategoryCanvasGroups != null &&
+            solvedSlot < solvedCategoryCanvasGroups.Length
+        )
+        {
+            canvasGroup = solvedCategoryCanvasGroups[solvedSlot];
+        }
+
+        StartCoroutine(AnimateSolvedCategoryAppear(column, canvasGroup));
+    }
+
+    private IEnumerator AnimateSolvedCategoryAppear(GameObject column, CanvasGroup canvasGroup)
+    {
+        RectTransform rectTransform = column.GetComponent<RectTransform>();
+
+        Vector3 targetScale = rectTransform != null
+            ? rectTransform.localScale
+            : column.transform.localScale;
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 0f;
+        }
+
+        if (rectTransform != null)
+        {
+            rectTransform.localScale = targetScale * 0.85f;
+        }
+        else
+        {
+            column.transform.localScale = targetScale * 0.85f;
+        }
+
+        float duration = 0.35f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = Mathf.Clamp01(elapsed / duration);
+            float ease = 1f - Mathf.Pow(1f - t, 3f);
+
+            float bounce = Mathf.Sin(t * Mathf.PI) * 0.08f;
+            float scaleMultiplier = Mathf.Lerp(0.85f, 1f, ease) + bounce;
+
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = ease;
+            }
+
+            if (rectTransform != null)
+            {
+                rectTransform.localScale = targetScale * scaleMultiplier;
+            }
+            else
+            {
+                column.transform.localScale = targetScale * scaleMultiplier;
+            }
+
+            yield return null;
+        }
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+        }
+
+        if (rectTransform != null)
+        {
+            rectTransform.localScale = targetScale;
+        }
+        else
+        {
+            column.transform.localScale = targetScale;
+        }
     }
 
     private void RefreshBoardLayout()

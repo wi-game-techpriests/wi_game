@@ -1532,6 +1532,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 593021945515242516, guid: 6a23a5f1b7b16004a9ac087bb56aa419, type: 3}
   m_PrefabInstance: {fileID: 638554134}
   m_PrefabAsset: {fileID: 0}
+--- !u!225 &638554138 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 3403283503446820189, guid: 6a23a5f1b7b16004a9ac087bb56aa419, type: 3}
+  m_PrefabInstance: {fileID: 638554134}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &674929467
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1652,6 +1657,11 @@ MonoBehaviour:
 --- !u!1 &674929470 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 593021945515242516, guid: 6a23a5f1b7b16004a9ac087bb56aa419, type: 3}
+  m_PrefabInstance: {fileID: 674929467}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &674929471 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 3403283503446820189, guid: 6a23a5f1b7b16004a9ac087bb56aa419, type: 3}
   m_PrefabInstance: {fileID: 674929467}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &677830439
@@ -2839,6 +2849,10 @@ MonoBehaviour:
   - {fileID: 4490539020716466577}
   - {fileID: 674929469}
   - {fileID: 638554136}
+  solvedCategoryCanvasGroups:
+  - {fileID: 4490539020716466579}
+  - {fileID: 674929471}
+  - {fileID: 638554138}
 --- !u!114 &1162803441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5651,6 +5665,11 @@ MonoBehaviour:
 --- !u!1 &4490539020716466578 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 593021945515242516, guid: 6a23a5f1b7b16004a9ac087bb56aa419, type: 3}
+  m_PrefabInstance: {fileID: 4490539020716466575}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &4490539020716466579 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 3403283503446820189, guid: 6a23a5f1b7b16004a9ac087bb56aa419, type: 3}
   m_PrefabInstance: {fileID: 4490539020716466575}
   m_PrefabAsset: {fileID: 0}
 --- !u!224 &4510042431889637864 stripped
