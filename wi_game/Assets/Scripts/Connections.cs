@@ -29,6 +29,7 @@ public class CategoryWrapper
     public string CheckCategory(List<string> selectedWords)
     {
         var categories = ToList();
+
         foreach (var category in categories)
         {
             if (selectedWords.All(word => category.categoryWords.Contains(word)))
@@ -36,28 +37,47 @@ public class CategoryWrapper
                 return category.categoryName;
             }
         }
+
         return null;
     }
 }
 
 public class Connections : MonoBehaviour
 {
+    [Header("Tiles")]
     public Image[] tileImages;
     public Sprite unselectedSprite;
     public Sprite selectedSprite;
     public Sprite doneSprite;
     public TextMeshProUGUI[] words;
+
+    [Header("Game")]
     public MainGameController mainGameController;
+
+    [Header("Lives")]
     public Image[] lifeImages;
     public Sprite liveSprite;
     public Sprite deadSprite;
 
+    [Header("Dynamic board layout")]
+    [SerializeField] private GridLayoutGroup activeTilesGrid;
+    [SerializeField] private LayoutElement activeTilesGridLayout;
+    [SerializeField] private GameObject[] solvedCategoryColumns;
+    [SerializeField] private TextMeshProUGUI[] solvedCategoryTexts;
+
     private CategoryWrapper categoryData;
+
     private int currentTry = 3;
-    private List<string> selectedWords = new List<string>(4);
     private int score = 0;
     private float gameStartTime;
     private int categoriesSolved = 0;
+
+    private string[] tileWordValues;
+
+    private readonly List<int> selectedIndices = new List<int>(4);
+    private readonly HashSet<int> solvedIndices = new HashSet<int>();
+
+    private bool isAnimatingWrongAnswer = false;
 
     public void StartGame()
     {
@@ -67,41 +87,93 @@ public class Connections : MonoBehaviour
 
     private void ClearGame()
     {
-        selectedWords.Clear();
+        selectedIndices.Clear();
+        solvedIndices.Clear();
+
         for (int i = 0; i < tileImages.Length; i++)
         {
+            tileImages[i].gameObject.SetActive(true);
             tileImages[i].sprite = unselectedSprite;
+            tileImages[i].color = Color.white;
+            tileImages[i].rectTransform.localScale = Vector3.one;
+            tileImages[i].rectTransform.localRotation = Quaternion.identity;
+
+            if (i < words.Length && words[i] != null)
+            {
+                words[i].gameObject.SetActive(true);
+                words[i].text = "";
+            }
         }
+
         for (int i = 0; i < lifeImages.Length; i++)
         {
             lifeImages[i].sprite = liveSprite;
+            lifeImages[i].color = Color.white;
         }
+
+        if (solvedCategoryColumns != null)
+        {
+            for (int i = 0; i < solvedCategoryColumns.Length; i++)
+            {
+                if (solvedCategoryColumns[i] != null)
+                {
+                    solvedCategoryColumns[i].SetActive(false);
+                }
+            }
+        }
+
+        if (solvedCategoryTexts != null)
+        {
+            for (int i = 0; i < solvedCategoryTexts.Length; i++)
+            {
+                if (solvedCategoryTexts[i] != null)
+                {
+                    solvedCategoryTexts[i].text = "";
+                }
+            }
+        }
+
         currentTry = 3;
         score = 0;
         gameStartTime = Time.time;
         categoriesSolved = 0;
+        isAnimatingWrongAnswer = false;
+
+        RefreshBoardLayout();
     }
 
     private void FetchData()
     {
-        GameManager.Instance.GetGameData("connections", 
-            (jsonData) => {
+        GameManager.Instance.GetGameData("connections",
+            (jsonData) =>
+            {
                 try
                 {
                     Debug.Log("Fetched data: " + jsonData);
+
                     categoryData = JsonUtility.FromJson<CategoryWrapper>(jsonData);
-                    // TextAsset jsonFile = Resources.Load<TextAsset>("connections_test");
-                    // categoryData = JsonUtility.FromJson<CategoryWrapper>(jsonFile.text);
+
                     List<string> allWords = new List<string>();
+
                     foreach (var category in categoryData.ToList())
                     {
                         allWords.AddRange(category.categoryWords);
                     }
+
                     allWords = allWords.OrderBy(x => UnityEngine.Random.value).ToList();
+
+                    tileWordValues = new string[words.Length];
+
                     for (int i = 0; i < words.Length; i++)
                     {
-                        words[i].text = allWords[i].Replace("\\n", "\n"); // for text wrapping
+                        tileWordValues[i] = allWords[i];
+
+                        // Tylko tekst wyświetlany dostaje zamianę \n.
+                        // Do logiki gry używamy tileWordValues[i], bez tej zamiany.
+                        words[i].text = allWords[i].Replace("\\n", "\n");
                     }
+
+                    RefreshBoardLayout();
                     mainGameController.StartGame();
                 }
                 catch (Exception ex)
@@ -109,7 +181,8 @@ public class Connections : MonoBehaviour
                     Debug.LogError("Błąd parsowania JSON: " + ex.Message);
                 }
             },
-            (error) => {
+            (error) =>
+            {
                 Debug.LogError("Błąd: " + error);
             }
         );
@@ -117,30 +190,53 @@ public class Connections : MonoBehaviour
 
     public void Click(int id)
     {
-        if (tileImages[id].sprite == doneSprite)
+        if (isAnimatingWrongAnswer)
         {
-            return; // Ignore clicks on already completed tiles
+            return;
         }
-        if (tileImages[id].sprite == unselectedSprite)
+
+        if (id < 0 || id >= tileImages.Length)
         {
-            if (selectedWords.Count >= 4)
-            {
-                Debug.Log("Cannot select more than 4 connections.");
-                return;
-            }
-            tileImages[id].sprite = selectedSprite;
-            selectedWords.Add(words[id].text);
+            Debug.LogWarning("Invalid tile id: " + id);
+            return;
         }
-        else
+
+        if (tileWordValues == null || id >= tileWordValues.Length)
         {
+            Debug.LogWarning("Tile word values are not initialized yet.");
+            return;
+        }
+
+        if (solvedIndices.Contains(id))
+        {
+            return;
+        }
+
+        if (selectedIndices.Contains(id))
+        {
+            selectedIndices.Remove(id);
             tileImages[id].sprite = unselectedSprite;
-            selectedWords.Remove(words[id].text);
+            return;
         }
+
+        if (selectedIndices.Count >= 4)
+        {
+            Debug.Log("Cannot select more than 4 connections.");
+            return;
+        }
+
+        selectedIndices.Add(id);
+        tileImages[id].sprite = selectedSprite;
     }
 
     public void Check()
     {
-        if (selectedWords.Count != 4)
+        if (isAnimatingWrongAnswer)
+        {
+            return;
+        }
+
+        if (selectedIndices.Count != 4)
         {
             Debug.Log("Please select exactly 4 connections.");
             return;
@@ -148,15 +244,24 @@ public class Connections : MonoBehaviour
 
         if (currentTry > 0)
         {
+            List<string> selectedWords = selectedIndices
+                .Select(index => tileWordValues[index])
+                .ToList();
+
             string correctCategory = categoryData.CheckCategory(selectedWords);
+
             if (correctCategory != null)
             {
                 int elapsedTime = (int)(Time.time - gameStartTime);
                 int pointsEarned = Mathf.Max(10, 260 - 5 * elapsedTime);
+
                 score += pointsEarned;
                 categoriesSolved++;
+
                 Debug.Log($"Kategoria {correctCategory} znaleziona! Czas: {elapsedTime:F1}s, Punkty: {pointsEarned}, Razem: {score}");
-                
+
+                SolveSelectedCategory(correctCategory);
+
                 if (categoriesSolved > 3)
                 {
                     score = Mathf.Min(score, 1000);
@@ -164,18 +269,9 @@ public class Connections : MonoBehaviour
                     GameManager.Instance.SetSceneResult(score);
                     mainGameController.EndGame();
                 }
-                else
-                {
-                    for (int i = 0; i < tileImages.Length; i++)
-                    {
-                        if (tileImages[i].sprite == selectedSprite)
-                        {
-                            tileImages[i].sprite = doneSprite;
-                        }
-                    }
-                    selectedWords.Clear();
-                }
-            } else {
+            }
+            else
+            {
                 StartCoroutine(FlashWrongAnswerAndLoseLife());
             }
         }
@@ -187,68 +283,151 @@ public class Connections : MonoBehaviour
         }
     }
 
-    private IEnumerator FlashWrongAnswerAndLoseLife()
+    private void SolveSelectedCategory(string categoryName)
     {
-        // Collect selected tiles
-        List<int> selectedIndices = new List<int>();
-        for (int i = 0; i < tileImages.Length; i++)
+        int solvedSlot = categoriesSolved - 1;
+
+        if (
+            solvedCategoryColumns != null &&
+            solvedSlot >= 0 &&
+            solvedSlot < solvedCategoryColumns.Length &&
+            solvedCategoryColumns[solvedSlot] != null
+        )
         {
-            if (tileImages[i].sprite == selectedSprite)
-                selectedIndices.Add(i);
+            solvedCategoryColumns[solvedSlot].SetActive(true);
         }
 
-        // Store originals
+        if (
+            solvedCategoryTexts != null &&
+            solvedSlot >= 0 &&
+            solvedSlot < solvedCategoryTexts.Length &&
+            solvedCategoryTexts[solvedSlot] != null
+        )
+        {
+            solvedCategoryTexts[solvedSlot].text = categoryName;
+        }
+
+        foreach (int idx in selectedIndices)
+        {
+            solvedIndices.Add(idx);
+
+            tileImages[idx].sprite = unselectedSprite;
+            tileImages[idx].color = Color.white;
+            tileImages[idx].rectTransform.localScale = Vector3.one;
+            tileImages[idx].rectTransform.localRotation = Quaternion.identity;
+
+            tileImages[idx].gameObject.SetActive(false);
+
+            if (idx < words.Length && words[idx] != null)
+            {
+                words[idx].gameObject.SetActive(false);
+            }
+        }
+
+        selectedIndices.Clear();
+
+        RefreshBoardLayout();
+    }
+
+    private void RefreshBoardLayout()
+    {
+        if (activeTilesGrid == null)
+        {
+            return;
+        }
+
+        int remainingRows = Mathf.Max(1, 4 - categoriesSolved);
+
+        activeTilesGrid.constraint = GridLayoutGroup.Constraint.FixedRowCount;
+        activeTilesGrid.constraintCount = remainingRows;
+
+        if (activeTilesGridLayout != null)
+        {
+            Vector2 cellSize = activeTilesGrid.cellSize;
+            Vector2 spacing = activeTilesGrid.spacing;
+
+            float height =
+                remainingRows * cellSize.y +
+                Mathf.Max(0, remainingRows - 1) * spacing.y;
+
+            activeTilesGridLayout.minHeight = height;
+            activeTilesGridLayout.preferredHeight = height;
+        }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(
+            activeTilesGrid.GetComponent<RectTransform>()
+        );
+    }
+
+    private IEnumerator FlashWrongAnswerAndLoseLife()
+    {
+        isAnimatingWrongAnswer = true;
+
+        List<int> flashingIndices = new List<int>(selectedIndices);
+
         var origTileColors = new List<Color>();
         var origTileScales = new List<Vector3>();
-        foreach (var idx in selectedIndices)
+        var origTileRotations = new List<Quaternion>();
+
+        foreach (var idx in flashingIndices)
         {
             origTileColors.Add(tileImages[idx].color);
             origTileScales.Add(tileImages[idx].rectTransform.localScale);
+            origTileRotations.Add(tileImages[idx].rectTransform.localRotation);
         }
+
         Color origLifeColor = lifeImages[currentTry].color;
 
         float duration = 0.6f;
         float elapsed = 0f;
 
-        // Animate pulse + red flash
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            float pulse = Mathf.Sin(t * Mathf.PI); // ease in/out
 
-            // Tiles: color and scale
-            for (int i = 0; i < selectedIndices.Count; i++)
+            float t = Mathf.Clamp01(elapsed / duration);
+            float pulse = Mathf.Sin(t * Mathf.PI);
+
+            for (int i = 0; i < flashingIndices.Count; i++)
             {
-                int idx = selectedIndices[i];
+                int idx = flashingIndices[i];
+
                 tileImages[idx].color = Color.Lerp(origTileColors[i], Color.red, pulse);
-                tileImages[idx].rectTransform.localScale = Vector3.Lerp(origTileScales[i], origTileScales[i] * 1.15f, pulse);
-                tileImages[idx].rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(0f, -8f, pulse));
+
+                tileImages[idx].rectTransform.localScale = Vector3.Lerp(
+                    origTileScales[i],
+                    origTileScales[i] * 1.15f,
+                    pulse
+                );
+
+                tileImages[idx].rectTransform.localRotation = Quaternion.Euler(
+                    0f,
+                    0f,
+                    Mathf.Lerp(0f, -8f, pulse)
+                );
             }
 
-            // Life image: flash red
             lifeImages[currentTry].color = Color.Lerp(origLifeColor, Color.red, pulse);
 
             yield return null;
         }
 
-        // Small hold on red
         yield return new WaitForSeconds(0.12f);
 
-        // Revert tiles and mark as unselected
-        for (int i = 0; i < selectedIndices.Count; i++)
+        for (int i = 0; i < flashingIndices.Count; i++)
         {
-            int idx = selectedIndices[i];
+            int idx = flashingIndices[i];
+
             tileImages[idx].color = origTileColors[i];
             tileImages[idx].rectTransform.localScale = origTileScales[i];
-            tileImages[idx].rectTransform.localRotation = Quaternion.identity;
+            tileImages[idx].rectTransform.localRotation = origTileRotations[i];
         }
 
-        // Mark life as dead and reset color
         lifeImages[currentTry].sprite = deadSprite;
         lifeImages[currentTry].color = Color.white;
 
-        // decrement tries
         currentTry--;
+
+        isAnimatingWrongAnswer = false;
     }
 }
