@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -89,6 +90,8 @@ public class Connections : MonoBehaviour
                 {
                     Debug.Log("Fetched data: " + jsonData);
                     categoryData = JsonUtility.FromJson<CategoryWrapper>(jsonData);
+                    // TextAsset jsonFile = Resources.Load<TextAsset>("connections_test");
+                    // categoryData = JsonUtility.FromJson<CategoryWrapper>(jsonFile.text);
                     List<string> allWords = new List<string>();
                     foreach (var category in categoryData.ToList())
                     {
@@ -101,7 +104,7 @@ public class Connections : MonoBehaviour
                     }
                     mainGameController.StartGame();
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     Debug.LogError("Błąd parsowania JSON: " + ex.Message);
                 }
@@ -110,7 +113,7 @@ public class Connections : MonoBehaviour
                 Debug.LogError("Błąd: " + error);
             }
         );
-    } 
+    }
 
     public void Click(int id)
     {
@@ -173,8 +176,7 @@ public class Connections : MonoBehaviour
                     selectedWords.Clear();
                 }
             } else {
-                lifeImages[currentTry].sprite = deadSprite;
-                currentTry--;
+                StartCoroutine(FlashWrongAnswerAndLoseLife());
             }
         }
         else
@@ -183,5 +185,70 @@ public class Connections : MonoBehaviour
             GameManager.Instance.SetSceneResult(score);
             mainGameController.EndGame();
         }
+    }
+
+    private IEnumerator FlashWrongAnswerAndLoseLife()
+    {
+        // Collect selected tiles
+        List<int> selectedIndices = new List<int>();
+        for (int i = 0; i < tileImages.Length; i++)
+        {
+            if (tileImages[i].sprite == selectedSprite)
+                selectedIndices.Add(i);
+        }
+
+        // Store originals
+        var origTileColors = new List<Color>();
+        var origTileScales = new List<Vector3>();
+        foreach (var idx in selectedIndices)
+        {
+            origTileColors.Add(tileImages[idx].color);
+            origTileScales.Add(tileImages[idx].rectTransform.localScale);
+        }
+        Color origLifeColor = lifeImages[currentTry].color;
+
+        float duration = 0.6f;
+        float elapsed = 0f;
+
+        // Animate pulse + red flash
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float pulse = Mathf.Sin(t * Mathf.PI); // ease in/out
+
+            // Tiles: color and scale
+            for (int i = 0; i < selectedIndices.Count; i++)
+            {
+                int idx = selectedIndices[i];
+                tileImages[idx].color = Color.Lerp(origTileColors[i], Color.red, pulse);
+                tileImages[idx].rectTransform.localScale = Vector3.Lerp(origTileScales[i], origTileScales[i] * 1.15f, pulse);
+                tileImages[idx].rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(0f, -8f, pulse));
+            }
+
+            // Life image: flash red
+            lifeImages[currentTry].color = Color.Lerp(origLifeColor, Color.red, pulse);
+
+            yield return null;
+        }
+
+        // Small hold on red
+        yield return new WaitForSeconds(0.12f);
+
+        // Revert tiles and mark as unselected
+        for (int i = 0; i < selectedIndices.Count; i++)
+        {
+            int idx = selectedIndices[i];
+            tileImages[idx].color = origTileColors[i];
+            tileImages[idx].rectTransform.localScale = origTileScales[i];
+            tileImages[idx].rectTransform.localRotation = Quaternion.identity;
+        }
+
+        // Mark life as dead and reset color
+        lifeImages[currentTry].sprite = deadSprite;
+        lifeImages[currentTry].color = Color.white;
+
+        // decrement tries
+        currentTry--;
     }
 }
