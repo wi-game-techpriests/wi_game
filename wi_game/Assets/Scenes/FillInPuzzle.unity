@@ -176,12 +176,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
-    eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-    in culpa qui officia deserunt mollit anim id est laborum.
+  m_text: "Jeden wie, wszyscy mog\u0105 wiedzie\u0107!\n\nZa takie takie rozwi\u0105zanie
+    dostanie pan plusa.... \nna informatyce spo\u0142ecznej! To jest rozwi\u0105zanie
+    nieoptymalne, prosz\u0119 siada\u0107\n\nDobry wiecz\xF3r, \"Doktora\" to sobie
+    Pan mo\u017Ce znale\u015B\u0107\_w scanmedzie. Pozdrawiam.\n\n21 s\u0105 rektorskie
+    i nie wiem jak wy, ale moja w\u0105troba ma plany"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: de4b874ab50447e45a6d64a1938e8157, type: 2}
   m_sharedMaterial: {fileID: -4149209525008846397, guid: de4b874ab50447e45a6d64a1938e8157, type: 2}
@@ -214,7 +213,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 2
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -2290,7 +2289,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 140.43, y: -14}
-  m_SizeDelta: {x: 62.14, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1564791272
 MonoBehaviour:
