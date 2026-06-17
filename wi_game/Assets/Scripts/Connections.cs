@@ -70,7 +70,7 @@ public class Connections : MonoBehaviour
 
     private int currentTry = 3;
     private int score = 0;
-    private float gameStartTime;
+    private float checkpointTime;
     private int categoriesSolved = 0;
 
     private string[] tileWordValues;
@@ -153,7 +153,7 @@ public class Connections : MonoBehaviour
 
         currentTry = 3;
         score = 0;
-        gameStartTime = Time.time;
+        checkpointTime = Time.time;
         categoriesSolved = 0;
         isAnimatingWrongAnswer = false;
 
@@ -260,7 +260,7 @@ public class Connections : MonoBehaviour
             return;
         }
 
-        if (currentTry > 0)
+        if (currentTry >= 0)
         {
             List<string> selectedWords = selectedIndices
                 .Select(index => tileWordValues[index])
@@ -270,7 +270,7 @@ public class Connections : MonoBehaviour
 
             if (correctCategory != null)
             {
-                int elapsedTime = (int)(Time.time - gameStartTime);
+                int elapsedTime = (int)(Time.time - checkpointTime);
                 int pointsEarned = Mathf.Max(10, 260 - 5 * elapsedTime);
 
                 score += pointsEarned;
@@ -290,7 +290,18 @@ public class Connections : MonoBehaviour
             }
             else
             {
-                StartCoroutine(FlashWrongAnswerAndLoseLife());
+                if (currentTry > 0)
+                {
+                    Debug.Log($"Niepoprawna kategoria. Pozostało prób: {currentTry - 1}");
+                    StartCoroutine(FlashWrongAnswerAndLoseLife());
+                }
+                else
+                {
+                    Debug.Log("Niepoprawna kategoria. Koniec gry.");
+                    GameManager.Instance.SetCurrentScore(score);
+                    GameManager.Instance.SetSceneResult(score);
+                    mainGameController.EndGame();
+                }
             }
         }
         else
@@ -325,6 +336,7 @@ public class Connections : MonoBehaviour
         }
 
         selectedIndices.Clear();
+        checkpointTime = Time.time;
 
         RefreshBoardLayout();
     }
