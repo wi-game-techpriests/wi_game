@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -247,7 +248,7 @@ public class Connections : MonoBehaviour
         tileImages[id].sprite = selectedSprite;
     }
 
-    public void Check()
+    public async void Check()
     {
         if (isAnimatingWrongAnswer)
         {
@@ -282,25 +283,20 @@ public class Connections : MonoBehaviour
 
                 if (categoriesSolved > 3)
                 {
-                    score = Mathf.Min(score, 1000);
-                    GameManager.Instance.SetCurrentScore(score);
-                    GameManager.Instance.SetSceneResult(score);
-                    mainGameController.EndGame();
+                    StartCoroutine(EndGameAnimation(3f));
                 }
             }
             else
             {
+                StartCoroutine(FlashWrongAnswerAndLoseLife());
                 if (currentTry > 0)
                 {
                     Debug.Log($"Niepoprawna kategoria. Pozostało prób: {currentTry - 1}");
-                    StartCoroutine(FlashWrongAnswerAndLoseLife());
                 }
                 else
                 {
                     Debug.Log("Niepoprawna kategoria. Koniec gry.");
-                    GameManager.Instance.SetCurrentScore(score);
-                    GameManager.Instance.SetSceneResult(score);
-                    mainGameController.EndGame();
+                    StartCoroutine(EndGameAnimation(1f));
                 }
             }
         }
@@ -310,6 +306,15 @@ public class Connections : MonoBehaviour
             GameManager.Instance.SetSceneResult(score);
             mainGameController.EndGame();
         }
+    }
+
+    private IEnumerator EndGameAnimation(float timeToWait)
+    {
+        yield return new WaitForSeconds(timeToWait);
+        score = Mathf.Min(score, 1000);
+        GameManager.Instance.SetCurrentScore(score);
+        GameManager.Instance.SetSceneResult(score);
+        mainGameController.EndGame();
     }
 
     private void SolveSelectedCategory(string categoryName)
